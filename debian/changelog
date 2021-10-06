@@ -1,3 +1,9 @@
+frr (8.0-0.do-1) unstable; urgency=medium
+
+  * DO-local development
+
+ -- Carl Baldwin <cbaldwin@digitalocean.com>  Wed, 06 Oct 2021 10:00:00 -0600
+
 frr (8.0-0) unstable; urgency=medium
 
   * New upstream release FRR 8.0
