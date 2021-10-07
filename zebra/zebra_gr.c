@@ -650,7 +650,7 @@ static void zebra_gr_process_client_stale_routes(struct zserv *client,
 
 	/* Check if route update completed for all AFI, SAFI */
 	for (afi = AFI_IP; afi < AFI_MAX; afi++)
-		for (safi = SAFI_UNICAST; safi <= SAFI_MPLS_VPN; safi++) {
+		for (safi = SAFI_UNICAST; safi < SAFI_MAX; safi++) {
 			if (info->af_enabled[afi][safi]) {
 				if (!info->route_sync[afi][safi]) {
 					LOG_GR(

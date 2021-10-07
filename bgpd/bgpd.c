@@ -2351,7 +2351,7 @@ void peer_nsf_stop(struct peer *peer)
 	UNSET_FLAG(peer->sflags, PEER_STATUS_NSF_MODE);
 
 	for (afi = AFI_IP; afi < AFI_MAX; afi++)
-		for (safi = SAFI_UNICAST; safi <= SAFI_MPLS_VPN; safi++)
+		for (safi = SAFI_UNICAST; safi < SAFI_MAX; safi++)
 			peer->nsf[afi][safi] = 0;
 
 	if (peer->t_gr_restart) {

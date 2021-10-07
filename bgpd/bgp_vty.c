@@ -10728,7 +10728,7 @@ static void bgp_show_neighbor_graceful_restart_capability_per_afi_safi(
 	bool eor_flag = false;
 
 	for (afi = AFI_IP; afi < AFI_MAX; afi++) {
-		for (safi = SAFI_UNICAST; safi <= SAFI_MPLS_VPN; safi++) {
+		for (safi = SAFI_UNICAST; safi < SAFI_MAX; safi++) {
 			if (!peer->afc[afi][safi])
 				continue;
 

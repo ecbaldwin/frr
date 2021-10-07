@@ -652,7 +652,7 @@ static int bgp_graceful_restart_timer_expire(struct thread *thread)
 
 	/* NSF delete stale route */
 	for (afi = AFI_IP; afi < AFI_MAX; afi++)
-		for (safi = SAFI_UNICAST; safi <= SAFI_MPLS_VPN; safi++)
+		for (safi = SAFI_UNICAST; safi < SAFI_MAX; safi++)
 			if (peer->nsf[afi][safi])
 				bgp_clear_stale_route(peer, afi, safi);
 
@@ -684,7 +684,7 @@ static int bgp_graceful_stale_timer_expire(struct thread *thread)
 
 	/* NSF delete stale route */
 	for (afi = AFI_IP; afi < AFI_MAX; afi++)
-		for (safi = SAFI_UNICAST; safi <= SAFI_MPLS_VPN; safi++)
+		for (safi = SAFI_UNICAST; safi < SAFI_MAX; safi++)
 			if (peer->nsf[afi][safi])
 				bgp_clear_stale_route(peer, afi, safi);
 
@@ -1278,7 +1278,7 @@ int bgp_stop(struct peer *peer)
 			UNSET_FLAG(peer->sflags, PEER_STATUS_NSF_MODE);
 
 			for (afi = AFI_IP; afi < AFI_MAX; afi++)
-				for (safi = SAFI_UNICAST; safi <= SAFI_MPLS_VPN;
+				for (safi = SAFI_UNICAST; safi < SAFI_MAX;
 				     safi++)
 					peer->nsf[afi][safi] = 0;
 		}
@@ -1961,7 +1961,7 @@ static int bgp_establish(struct peer *peer)
 			zlog_debug("peer %s BGP_HELPER_MODE", peer->host);
 	}
 	for (afi = AFI_IP; afi < AFI_MAX; afi++)
-		for (safi = SAFI_UNICAST; safi <= SAFI_MPLS_VPN; safi++) {
+		for (safi = SAFI_UNICAST; safi < SAFI_MAX; safi++) {
 			if (peer->afc_nego[afi][safi]
 			    && CHECK_FLAG(peer->cap, PEER_CAP_RESTART_ADV)
 			    && CHECK_FLAG(peer->af_cap[afi][safi],
