@@ -1884,7 +1884,7 @@ static int bgp_update_gr_info(struct peer *peer, afi_t afi, safi_t safi)
 		return -1;
 	}
 
-	if ((safi < SAFI_UNICAST) || (safi > SAFI_MPLS_VPN)) {
+	if ((safi < SAFI_UNICAST) || (safi >= SAFI_MAX)) {
 		if (BGP_DEBUG(update, UPDATE_OUT))
 			zlog_debug("%s : invalid safi %d", __func__, safi);
 		return -1;
