@@ -2987,7 +2987,8 @@ static void bgp_process_main_one(struct bgp *bgp, struct bgp_dest *dest,
 /* Process the routes with the flag BGP_NODE_SELECT_DEFER set */
 int bgp_best_path_select_defer(struct bgp *bgp, afi_t afi, safi_t safi)
 {
-	struct bgp_dest *dest;
+	struct bgp_dest *dest, *rd_dest;
+	struct bgp_table *rd_table;
 	int cnt = 0;
 	struct afi_safi_info *thread_info;
 
@@ -3009,6 +3010,32 @@ int bgp_best_path_select_defer(struct bgp *bgp, afi_t afi, safi_t safi)
 	for (dest = bgp_table_top(bgp->rib[afi][safi]);
 	     dest && bgp->gr_info[afi][safi].gr_deferred != 0 && cnt < BGP_MAX_BEST_ROUTE_SELECT;
 	     dest = bgp_route_next(dest)) {
+		if ((safi == SAFI_MPLS_VPN) || (safi == SAFI_ENCAP)
+		    || (safi == SAFI_EVPN)) {
+			// Process this destination as a route distinguisher,
+			// recursively iterating its table
+			if (bgp_dest_has_bgp_path_info_data(dest)) {
+				rd_table = bgp_dest_get_bgp_table_info(dest);
+
+				for (rd_dest = bgp_table_top(rd_table);
+				     rd_dest && bgp->gr_info[afi][safi].gr_deferred != 0 && cnt < BGP_MAX_BEST_ROUTE_SELECT;
+				     rd_dest = bgp_route_next(rd_dest)) {
+					if (!CHECK_FLAG(rd_dest->flags, BGP_NODE_SELECT_DEFER))
+						continue;
+
+					UNSET_FLAG(rd_dest->flags, BGP_NODE_SELECT_DEFER);
+					bgp->gr_info[afi][safi].gr_deferred--;
+					bgp_process_main_one(bgp, rd_dest, afi, safi);
+					cnt++;
+				}
+				if (rd_dest) {
+					bgp_dest_unlock_node(rd_dest);
+					rd_dest = NULL;
+				}
+
+			}
+			continue;
+		}
 		if (!CHECK_FLAG(dest->flags, BGP_NODE_SELECT_DEFER))
 			continue;
 
