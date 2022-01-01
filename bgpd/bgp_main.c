@@ -85,6 +85,7 @@ static const struct option longopts[] = {
 /* signal definitions */
 void sighup(void);
 void sigint(void);
+void sigterm(void);
 void sigusr1(void);
 
 static void bgp_exit(int);
@@ -105,7 +106,7 @@ static struct quagga_signal_t bgp_signals[] = {
 	},
 	{
 		.signal = SIGTERM,
-		.handler = &sigint,
+		.handler = &sigterm,
 	},
 };
 
@@ -155,10 +156,10 @@ void sighup(void)
 	/* Try to return to normal operation. */
 }
 
-/* SIGINT handler. */
-__attribute__((__noreturn__)) void sigint(void)
+/* SIGTERM handler. */
+__attribute__((__noreturn__)) void sigterm(void)
 {
-	zlog_notice("Terminating on signal");
+	zlog_notice("Terminating on SIGTERM");
 	assert(bm->terminating == false);
 	bm->terminating = true;	/* global flag that shutting down */
 
@@ -168,6 +169,16 @@ __attribute__((__noreturn__)) void sigint(void)
 	bgp_terminate();
 
 	bgp_exit(0);
+
+	exit(0);
+}
+
+/* SIGINT handler. */
+__attribute__((__noreturn__)) void sigint(void)
+{
+	zlog_notice("Terminating on SIGINT");
+	assert(bm->terminating == false);
+	bm->terminating = true;	/* global flag that shutting down */
 
 	exit(0);
 }
